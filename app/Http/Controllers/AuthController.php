@@ -23,20 +23,22 @@ class AuthController extends Controller
 
         if ( !Auth::attempt($request->only('email','password')) ){
             return response([
-                'message' => 'Invalid credentials'
+                'message' => 'E-mail ou senha inválidos'
+            ], Response::HTTP_UNAUTHORIZED);
+        }else if( User::where([['email', $request->email], ['active', 0]])->exists() ) {
+            return response([
+                'message' => 'Este usuário está inativo'
             ], Response::HTTP_UNAUTHORIZED);
         }
 
         $user = Auth::user();
 
         $token = $user->createToken('token')->plainTextToken;
-
-        $cookie = cookie('jwt', $token, 60 * 24); // 60minutes  * 24 = 1day
+        $cookie = cookie('jwt', $token, 60 * 14);
 
         return response([
             'message' => 'successfully logged in'
         ])->withCookie($cookie);
-
     }
 
     public function user() {

@@ -11,13 +11,14 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable, HasApiTokens;
 
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-    ];
+    protected $table = 'users';
+    protected $keyType = 'integer';
+    public $auth = [];
 
-    protected $hidden = [
-        'password',
-    ];
+    protected $guarded = [];
+    protected $hidden = ['detail_id'];
+
+    public function permission() {
+        return $this->belongsToMany(Permission::class);
+    }
 }
